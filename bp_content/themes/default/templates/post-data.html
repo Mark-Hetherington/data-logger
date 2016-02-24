@@ -1,0 +1,35 @@
+{% extends base_layout %}
+
+{% block title %}
+        {% trans %}Contact{% endtrans %} - {{app_name}}
+{% endblock %}
+{% block header_title %}
+        {% trans %}Contact{% endtrans %}
+{% endblock %}
+
+{% block content %}
+    <form id="form_contact" action="{{ url|safe }}" method="post" class="well form-horizontal">
+        <fieldset>
+            <input type="hidden" name="exception" value="{{ exception|e }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <textarea name="data">&lt;msg&gt;&lt;src&gt;CC128-v1.51&lt;/src&gt;&lt;dsb&gt;01238&lt;/dsb&gt;&lt;time&gt;12:56:14&lt;/time&gt;&lt;tmpr&gt;37.3&lt;/tmpr&gt;&lt;sensor&gt;1&lt;/sensor&gt;&lt;id&gt;00925&lt;/id&gt;&lt;type&gt;1&lt;/type&gt;&lt;ch1&gt;&lt;watts&gt;00086&lt;/watts&gt;&lt;/ch1&gt;&lt;/msg&gt;</textarea>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{% trans %}Send Message{% endtrans %}</button>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}
+
+{% block mediaJS %}
+<script>
+    $().ready(function() {
+        $("#form_contact").validate({
+            errorPlacement: function(error, element) {
+                element.parent().parent().addClass("error");
+                error.addClass("help-inline").appendTo( element.parent() );
+            }
+        });
+    });
+</script>
+{% endblock %}
+

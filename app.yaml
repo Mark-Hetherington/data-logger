@@ -115,6 +115,10 @@ handlers:
   script: main.app
   login: admin
 
+- url: /taskqueue-process-data.*
+  script: main.app
+  login: admin
+
 - url: /.*
   script: main.app
 #  secure: always

@@ -14,6 +14,8 @@ _routes = [
     RedirectRoute('/secure/', handlers.SecureRequestHandler, name='secure', strict_slash=True),
     RedirectRoute('/settings/delete_account', handlers.DeleteAccountHandler, name='delete-account', strict_slash=True),
     RedirectRoute('/contact/', handlers.ContactHandler, name='contact', strict_slash=True),
+    RedirectRoute('/post-data/', handlers.DataSubmitHandler, name='data-submit', strict_slash=True),
+    RedirectRoute('/taskqueue-process-data/', handlers.DataProcessHandler, name='taskqueue-process-data', strict_slash=True),
 ]
 
 def get_routes():

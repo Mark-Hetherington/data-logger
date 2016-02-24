@@ -21,11 +21,11 @@ from bp_includes.external import httpagentparser
 # local application/library specific imports
 import bp_includes.lib.i18n as i18n
 from bp_includes.lib.basehandler import BaseHandler
-from bp_includes.lib.decorators import user_required
+from bp_includes.lib.decorators import user_required, taskqueue_method
 from bp_includes.lib import captcha, utils
 import bp_includes.models as models_boilerplate
 import forms as forms
-
+from google.appengine.api import taskqueue
 
 class ContactHandler(BaseHandler):
     """
@@ -280,3 +280,36 @@ class DeleteAccountHandler(BaseHandler):
     @webapp2.cached_property
     def form(self):
         return forms.DeleteAccountForm(self)
+
+
+class DataSubmitHandler(BaseHandler):
+    """
+    Handler for Data Logging - expects payload in 'data' field
+    """
+    def get(self):
+        """ Returns a simple HTML for contact form """
+
+        return self.render_template('post-data.html', **{})
+
+    def post(self):
+        process_url = self.uri_for('taskqueue-process-data')
+        taskqueue.add(url=process_url, params={
+            'data': self.request.get('data')
+        })
+        message = _('Your data was submitted successfully.')
+        self.add_message(message, 'success')
+        #TODO: respond with machine readable return.
+        return self.redirect_to('data-submit')
+
+
+
+class DataProcessHandler(BaseHandler):
+    """
+    Core Handler for sending Emails
+    Use with TaskQueue
+    """
+
+    @taskqueue_method
+    def post(self):
+        data = self.request.get("data")
+        raise ValueError("Data format not supported")
