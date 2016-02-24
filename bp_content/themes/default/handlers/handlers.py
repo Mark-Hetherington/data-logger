@@ -26,6 +26,7 @@ from bp_includes.lib import captcha, utils
 import bp_includes.models as models_boilerplate
 import forms as forms
 from google.appengine.api import taskqueue
+import datetime
 
 class ContactHandler(BaseHandler):
     """
@@ -294,7 +295,8 @@ class DataSubmitHandler(BaseHandler):
     def post(self):
         process_url = self.uri_for('taskqueue-process-data')
         taskqueue.add(url=process_url, params={
-            'data': self.request.get('data')
+            'data': self.request.get('data'),
+            'time': datetime.datetime.now()
         })
         message = _('Your data was submitted successfully.')
         self.add_message(message, 'success')
