@@ -29,12 +29,13 @@ from google.appengine.api import taskqueue
 import datetime
 from bp_content.themes.default.processors.CurrentCostProcessor import CurrentCostProcessor
 import sys
+from decorators import basic_auth
+import models
 
 class ContactHandler(BaseHandler):
     """
     Handler for Contact Form
     """
-
     def get(self):
         """ Returns a simple HTML for contact form """
 
@@ -289,18 +290,24 @@ class DataSubmitHandler(BaseHandler):
     """
     Handler for Data Logging - expects payload in 'data' field
     """
+    skipCSRF = True
     def get(self):
         """ Returns a simple HTML for contact form """
 
         return self.render_template('post-data.html', **{})
 
+    @basic_auth
     def post(self):
         process_url = self.uri_for('taskqueue-process-data')
-        taskqueue.add(url=process_url, params={
+        params = {
             'data': self.request.get('data'),
-            'time': datetime.datetime.now(),
-            'source_id':0 # TODO:We may recieve data from multiple sources and need to differentiate
-        })
+            'time': self.request.get('timstamp') if self.request.get('timstamp') else datetime.datetime.now()
+        }
+        if len(params['data']) == 0:
+            self.response.write("<h1>Cannot process empty data</h1>")
+            self.abort(400)
+        taskqueue.add(url=process_url, params=params)
+
         message = _('Your data was submitted successfully.')
         self.add_message(message, 'success')
         #TODO: respond with machine readable return.
@@ -320,8 +327,7 @@ class DataProcessHandler(BaseHandler):
     def post(self):
         data = {
             'data': self.request.get("data"),
-            'time': self.request.get("time"),
-            'source_id': self.request.get("source_id")
+            'time': datetime.datetime.strptime(self.request.get("time"),'%Y-%m-%d %H:%M:%S.%f')
         }
         for processor in self._processors:
             the_processor = processor(data)
@@ -339,4 +345,7 @@ class DataProcessHandler(BaseHandler):
                     # move on to next processor.
                     pass
 
-        raise ValueError("Data format not supported")
+        rejected = models.RejectedSubmission(data=data["data"], when=data["time"])
+        key = rejected.put()
+        logging.info("Data format not supported. Id:" + str(key))
+        #raise ValueError("Data format not supported"+data['data'])

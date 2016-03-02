@@ -1,4 +1,4 @@
-application: sandengine
+application: hethos-data-logger
 version: dev
 runtime: python27
 api_version: 1
