@@ -27,6 +27,8 @@ import bp_includes.models as models_boilerplate
 import forms as forms
 from google.appengine.api import taskqueue
 import datetime
+from bp_content.themes.default.processors.CurrentCostProcessor import CurrentCostProcessor
+import sys
 
 class ContactHandler(BaseHandler):
     """
@@ -296,7 +298,8 @@ class DataSubmitHandler(BaseHandler):
         process_url = self.uri_for('taskqueue-process-data')
         taskqueue.add(url=process_url, params={
             'data': self.request.get('data'),
-            'time': datetime.datetime.now()
+            'time': datetime.datetime.now(),
+            'source_id':0 # TODO:We may recieve data from multiple sources and need to differentiate
         })
         message = _('Your data was submitted successfully.')
         self.add_message(message, 'success')
@@ -307,11 +310,33 @@ class DataSubmitHandler(BaseHandler):
 
 class DataProcessHandler(BaseHandler):
     """
-    Core Handler for sending Emails
+    Core Handler for receiving data feeds
     Use with TaskQueue
     """
 
+    _processors = [CurrentCostProcessor]
+
     @taskqueue_method
     def post(self):
-        data = self.request.get("data")
+        data = {
+            'data': self.request.get("data"),
+            'time': self.request.get("time"),
+            'source_id': self.request.get("source_id")
+        }
+        for processor in self._processors:
+            the_processor = processor(data)
+            if the_processor.handles_format():
+                try:
+                    # TODO: Are processors going to output any data?
+                    the_processor.process()
+
+                    # TODO: Is there any point writing a success code?
+                    self.response.write('Data processed.')
+                    return True
+                except:
+                    exc_info = sys.exc_info()
+                    print "Data parsing error:", exc_info[0]
+                    # move on to next processor.
+                    pass
+
         raise ValueError("Data format not supported")
