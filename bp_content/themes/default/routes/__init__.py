@@ -11,11 +11,13 @@ secure_scheme = 'https'
 # Here go your routes, you can overwrite boilerplate routes (bp_includes/routes)
 
 _routes = [
-    RedirectRoute('/secure/', handlers.SecureRequestHandler, name='secure', strict_slash=True),
-    RedirectRoute('/settings/delete_account', handlers.DeleteAccountHandler, name='delete-account', strict_slash=True),
+    #RedirectRoute('/secure/', handlers.SecureRequestHandler, name='secure', strict_slash=True),
+    #RedirectRoute('/settings/delete_account', handlers.DeleteAccountHandler, name='delete-account', strict_slash=True),
     RedirectRoute('/contact/', handlers.ContactHandler, name='contact', strict_slash=True),
     RedirectRoute('/post-data/', handlers.DataSubmitHandler, name='data-submit', strict_slash=True),
     RedirectRoute('/taskqueue-process-data/', handlers.DataProcessHandler, name='taskqueue-process-data', strict_slash=True),
+    RedirectRoute('/data-paths/', handlers.DataPathListHandler, name='data-path-index', strict_slash=True),
+    RedirectRoute('/data-path/<path_id:.*>', handlers.DataPathDisplayHandler, name='data-path-view', strict_slash=True),
 ]
 
 def get_routes():

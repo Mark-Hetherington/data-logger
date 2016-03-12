@@ -1,0 +1,25 @@
+{% extends base_layout %}
+
+{% block title %}
+        {% trans %}Paths{% endtrans %} - {{app_name}}
+{% endblock %}
+{% block header_title %}
+        {% trans %}Paths{% endtrans %}
+{% endblock %}
+
+{% block content %}
+<h1>Paths</h1>
+<table>
+    <thead><tr><th>Path</th><th>Units</th><th>Last update</th></tr></thead>
+    <tbody>
+    {% for path in paths %}
+        <tr><td><a href="{{ uri_for('data-path-view', path_id = path.key.id())}}">{{path.key.id()}}</a></td><td>{{path.units}}</td><td>{{path.updated}}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block mediaJS %}
+{% endblock %}
+

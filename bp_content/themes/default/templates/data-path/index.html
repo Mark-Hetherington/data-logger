@@ -1,0 +1,25 @@
+{% extends base_layout %}
+
+{% block title %}
+        {% trans %}Path{% endtrans %} - {{datapath.key.id()}}
+{% endblock %}
+{% block header_title %}
+        {% trans %}Path{% endtrans %}
+{% endblock %}
+
+{% block content %}
+<h1>{{datapath.key.id()}} - Points</h1>
+<table>
+    <thead><tr><th>value</th><th>Time</th></thead>
+    <tbody>
+    {% for point in points %}
+        <tr><td>{{point.value}}</td><td>{{point.when}}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block mediaJS %}
+{% endblock %}
+

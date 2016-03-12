@@ -349,3 +349,26 @@ class DataProcessHandler(BaseHandler):
         key = rejected.put()
         logging.info("Data format not supported. Id:" + str(key))
         #raise ValueError("Data format not supported"+data['data'])
+
+
+class DataPathListHandler(BaseHandler):
+    """
+    Handler for Listing data paths
+    """
+    def get(self):
+        """ Returns a simple HTML for contact form """
+        paths = models.DataPath.query().fetch()
+        return self.render_template('data-paths/index.html', **{"paths": paths})
+
+
+class DataPathDisplayHandler(BaseHandler):
+    """
+    Handler for Listing data paths
+    """
+    def get(self,path_id):
+        """ Returns a simple HTML for contact form """
+        key = ndb.Key("DataPath", path_id.replace("-","/"))
+        path = models.DataPath.get_by_id(key.id())
+        points = models.DataPoint.query(models.DataPoint.path == path.key).fetch()
+        return self.render_template('data-path/index.html', **{"datapath": path, "points": points})
+
