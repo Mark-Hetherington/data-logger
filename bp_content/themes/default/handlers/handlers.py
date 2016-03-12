@@ -358,6 +358,8 @@ class DataPathListHandler(BaseHandler):
     def get(self):
         """ Returns a simple HTML for contact form """
         paths = models.DataPath.query().fetch()
+        for path in paths:
+            path.count = models.DataPoint.query(models.DataPoint.path == path.key).count(limit=1000)
         return self.render_template('data-paths/index.html', **{"paths": paths})
 
 
@@ -369,6 +371,6 @@ class DataPathDisplayHandler(BaseHandler):
         """ Returns a simple HTML for contact form """
         key = ndb.Key("DataPath", path_id.replace("-","/"))
         path = models.DataPath.get_by_id(key.id())
-        points = models.DataPoint.query(models.DataPoint.path == path.key).fetch()
+        points = models.DataPoint.query(models.DataPoint.path == path.key).order(models.DataPoint.when).fetch(20)
         return self.render_template('data-path/index.html', **{"datapath": path, "points": points})
 

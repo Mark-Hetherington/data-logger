@@ -10,10 +10,14 @@
 {% block content %}
 <h1>Paths</h1>
 <table>
-    <thead><tr><th>Path</th><th>Units</th><th>Last update</th></tr></thead>
+    <thead><tr><th>Path</th><th>Units</th><th>Last update</th><th>Points</th></tr></thead>
     <tbody>
     {% for path in paths %}
-        <tr><td><a href="{{ uri_for('data-path-view', path_id = path.key.id())}}">{{path.key.id()}}</a></td><td>{{path.units}}</td><td>{{path.updated}}</td></tr>
+        <tr><td><a href="{{ uri_for('data-path-view', path_id = path.key.id())}}">{{path.key.id()}}</a></td>
+            <td>{{path.units}}</td>
+            <td>{{path.updated}}</td>
+            <td>{{path.count}}</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>
